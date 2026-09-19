@@ -28,5 +28,5 @@ export const usePasscode = create<{
     }
     set({ passcode });
   },
-  restore: () => set({ passcode: read(), restored: true }),
+  restore: () => set((s) => ({ passcode: s.passcode ?? read(), restored: true })),
 }));
