@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 
-import { ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 
+import { VeroLogo } from "@/components/vero-logo";
 import { APP_CONFIG } from "@/config/app-config";
 
 import { LangContainer, LanguageToggle } from "./[job]/_components/language-toggle";
@@ -15,7 +15,7 @@ export default function ApplyLayout({ children }: Readonly<{ children: ReactNode
     <LangContainer className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-4 bg-background p-4 text-foreground">
       <header className="flex items-center justify-between">
         <span className="flex items-center gap-2 font-semibold text-base">
-          <ShieldCheck className="size-5" aria-hidden="true" />
+          <VeroLogo className="size-6" />
           {APP_CONFIG.name}
         </span>
         <LanguageToggle />

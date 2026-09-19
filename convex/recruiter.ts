@@ -82,6 +82,7 @@ export const list = query({
           recruiterState: a.recruiterState,
           emailState: a.emailState,
           consistency: a.checks?.consistency,
+          safetyScore: a.checks?.safetyScore,
           claims: (a.claimQuestions?.items ?? []).map((question, i) => ({
             question,
             answer: answers.find((x) => x.questionId === `claim-${i + 1}`)?.value ?? "",

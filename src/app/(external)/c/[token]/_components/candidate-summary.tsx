@@ -5,13 +5,13 @@ import { useEffect } from "react";
 import { cn } from "cn";
 import { useMutation, useQuery } from "convex/react";
 import { format } from "date-fns";
-import { ShieldCheck } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { VeroLogo } from "@/components/vero-logo";
 import { api } from "@/convex/_generated/api";
 
 export function CandidateSummary({ token }: { token: string }) {
@@ -44,7 +44,7 @@ export function CandidateSummary({ token }: { token: string }) {
   return (
     <>
       <p className="flex items-center gap-2 font-semibold">
-        <ShieldCheck className="size-5" aria-hidden="true" />
+        <VeroLogo className="size-6" />
         Vero
       </p>
       <Card>

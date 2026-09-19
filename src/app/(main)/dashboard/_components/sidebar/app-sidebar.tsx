@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 
-import { ShieldCheck } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import {
@@ -14,6 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { VeroLogo } from "@/components/vero-logo";
 import { APP_CONFIG } from "@/config/app-config";
 import { rootUser } from "@/data/users";
 import { sidebarItems } from "@/navigation/sidebar/sidebar-items";
@@ -41,7 +41,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <Link prefetch={false} href="/dashboard/applicants">
-                <ShieldCheck />
+                <VeroLogo className="size-6!" />
                 <span className="font-semibold text-base">{APP_CONFIG.name}</span>
               </Link>
             </SidebarMenuButton>
