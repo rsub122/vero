@@ -128,6 +128,18 @@ export const setOutcome = mutation({
   },
 });
 
+/** Undo a call outcome from the board (drag back to "Needs a call"). A hand-off to the PM is final. */
+export const reopen = mutation({
+  args: { passcode: v.string(), applicantId: v.id("applicants") },
+  handler: async (ctx, { passcode, applicantId }) => {
+    requireRecruiter(passcode);
+    const a = await getApplicant(ctx, applicantId);
+    if (a.recruiterState !== "confirmed" && a.recruiterState !== "not_proceeding") return;
+    await ctx.db.patch(a._id, { recruiterState: "called" });
+    await logEvent(ctx, a, "call_outcome", "recruiter", { outcome: "reopened" });
+  },
+});
+
 export const auditLog = query({
   args: { passcode: v.string(), applicantId: v.id("applicants") },
   handler: async (ctx, { passcode, applicantId }) => {

@@ -29,7 +29,7 @@ export const recruiterStateLabel = {
   sent: "Sent to PM",
 } as const;
 
-/** Board lanes follow the recruiter's steps. Cards move when a button is pressed, never by dragging. */
+/** Board lanes follow the recruiter's steps. Cards move by button or by drag; `boardMove` says what a drop means. */
 export const lanes = [
   { id: "call", title: "Needs a call", empty: "Nobody to call." },
   { id: "ready", title: "Ready for PM", empty: "Nobody waiting to send." },
@@ -39,11 +39,32 @@ export const lanes = [
 
 export type LaneId = (typeof lanes)[number]["id"];
 
-export function laneOf(item: ApplicantItem): LaneId {
+export function laneOf(item: Pick<ApplicantItem, "verdict" | "recruiterState">): LaneId {
   if (!item.verdict) return "checking";
   if (item.recruiterState === "sent" || item.recruiterState === "not_proceeding") return "done";
   if (item.verdict.level === "amber" && (item.recruiterState === "new" || item.recruiterState === "called")) {
     return "call";
   }
   return "ready";
+}
+
+export type BoardMove =
+  | { kind: "none" }
+  | { kind: "confirm" | "not_proceeding" | "send" | "reopen" }
+  | { kind: "refuse"; reason: string };
+
+const refuse = (reason: string): BoardMove => ({ kind: "refuse", reason });
+
+/** What dropping a card on a lane means. Every lane pair has an answer, so no drop is silently ignored. */
+export function boardMove(item: Pick<ApplicantItem, "verdict" | "recruiterState">, to: LaneId): BoardMove {
+  const from = laneOf(item);
+  if (from === to) return { kind: "none" };
+  if (from === "checking") return refuse("Still taking the check. The card moves on its own when the verdict lands.");
+  if (to === "checking") return refuse("Only applicants taking the check right now belong in In check.");
+  if (item.recruiterState === "sent") return refuse("Already sent to the PM and the foreman has the email.");
+  if (to === "call") {
+    return item.verdict?.level === "amber" ? { kind: "reopen" } : refuse("No call needed: every check passed.");
+  }
+  if (to === "ready") return { kind: "confirm" };
+  return from === "ready" ? { kind: "send" } : { kind: "not_proceeding" };
 }

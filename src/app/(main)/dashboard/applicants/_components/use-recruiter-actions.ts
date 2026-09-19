@@ -33,5 +33,8 @@ export function useRecruiterActions() {
   const logCall = useMutation(api.recruiter.logCall).withOptimisticUpdate((store, { applicantId }) =>
     patchApplicant(store, applicantId, (i) => (i.recruiterState === "new" ? { recruiterState: "called" } : {})),
   );
-  return { sendToPm, setOutcome, logCall };
+  const reopen = useMutation(api.recruiter.reopen).withOptimisticUpdate((store, { applicantId }) =>
+    patchApplicant(store, applicantId, () => ({ recruiterState: "called" })),
+  );
+  return { sendToPm, setOutcome, logCall, reopen };
 }
