@@ -31,7 +31,6 @@ export function JobLink({ slug, title }: { slug: string; title: string }) {
 
   return (
     <div className="flex min-w-0 items-center gap-2">
-      <code className="hidden min-w-0 truncate rounded-md border bg-muted/40 px-2 py-1 text-xs sm:block">{url}</code>
       <Button variant="outline" size="sm" onClick={copy}>
         <Copy aria-hidden="true" />
         Copy link

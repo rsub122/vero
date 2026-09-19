@@ -36,7 +36,7 @@ export function VerdictBadge({ level }: { level?: "green" | "amber" }) {
 
 export function applicantMeta(item: ApplicantItem) {
   return [
-    item.yearsInTrade !== undefined && `${item.yearsInTrade} yrs`,
+    item.yearsInTrade !== undefined && `${item.yearsInTrade} ${item.yearsInTrade === 1 ? "yr" : "yrs"}`,
     item.lastEmployer,
     formatDistanceToNow(item.submittedAt, { addSuffix: true }),
     item.language === "es" && "Español",
