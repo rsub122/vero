@@ -3,6 +3,7 @@ import { ConvexError, v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import { mutation, type QueryCtx, query } from "./_generated/server";
 import { EVENT_LABELS, type EventType, logEvent } from "./audit";
+import { BOT_TRAP, CLAIM_IDS, SAFETY_QUESTIONS } from "./lib/questions";
 import { countApplicants } from "./lib/verdict";
 
 /**
@@ -137,6 +138,45 @@ export const reopen = mutation({
     if (a.recruiterState !== "confirmed" && a.recruiterState !== "not_proceeding") return;
     await ctx.db.patch(a._id, { recruiterState: "called" });
     await logEvent(ctx, a, "call_outcome", "recruiter", { outcome: "reopened" });
+  },
+});
+
+/** Everything the applicant typed or picked, in the order they saw it. Choices shown in English; phone left out (R25). */
+export const responses = query({
+  args: { passcode: v.string(), applicantId: v.id("applicants") },
+  handler: async (ctx, { passcode, applicantId }) => {
+    requireRecruiter(passcode);
+    const a = await getApplicant(ctx, applicantId);
+    const provider = a.form?.providerId ? await ctx.db.get(a.form.providerId) : null;
+    const answers = await ctx.db
+      .query("answers")
+      .withIndex("by_applicant", (q) => q.eq("applicantId", applicantId))
+      .collect();
+    const claims = a.claimQuestions?.items ?? [];
+    const questions = [
+      ...SAFETY_QUESTIONS.map((q) => ({ id: q.id, kind: "safety" as const, text: q.text.en, choices: q.choices.en })),
+      { id: BOT_TRAP.id, kind: "bot" as const, text: BOT_TRAP.text.en, choices: undefined },
+      ...CLAIM_IDS.map((id, i) => ({ id, kind: "claim" as const, text: claims[i] ?? "", choices: undefined })),
+    ];
+    const form = a.form && {
+      yearsInTrade: a.form.yearsInTrade,
+      lastEmployer: a.form.lastEmployer,
+      lastSite: a.form.lastSite,
+      hasCard: a.form.hasCard,
+      provider: provider?.name ?? a.form.providerOther,
+      cardId: a.form.cardId,
+      cardIssueDate: a.form.cardIssueDate,
+      startDate: a.form.startDate,
+      hasTransport: a.form.hasTransport,
+    };
+    return {
+      form,
+      answers: questions.map(({ choices, ...q }) => {
+        const x = answers.find((r) => r.questionId === q.id);
+        const answer = x && (choices && x.value !== "" ? (choices[Number(x.value)] ?? "") : x.value);
+        return { ...q, answer, correct: x?.correct, expired: x?.expired ?? false, pasted: x?.pasted ?? false };
+      }),
+    };
   },
 });
 

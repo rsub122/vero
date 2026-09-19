@@ -14,6 +14,7 @@ import { api } from "@/convex/_generated/api";
 
 import { ApplicantAction } from "./applicant-action";
 import { AuditLog } from "./audit-log";
+import { Responses } from "./responses";
 import { applicationTiming, formatDuration } from "./timing";
 import { type ApplicantItem, verdictConfig } from "./verdict-config";
 
@@ -53,11 +54,6 @@ function hostname(url: string) {
     return url;
   }
 }
-
-const RESULT_STYLE: Record<string, string> = {
-  match: verdictConfig.green.className,
-  conflict: verdictConfig.amber.className,
-};
 
 function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
@@ -125,31 +121,7 @@ function Details({ item, passcode }: { item: ApplicantItem; passcode: string }) 
         </section>
       )}
 
-      {item.consistency && item.consistency.source !== "none" && (
-        <section className="flex flex-col gap-3">
-          <div className="flex items-center justify-between gap-2">
-            <Heading>Answer check</Heading>
-            <Badge variant="outline" className={cn("rounded-md capitalize", RESULT_STYLE[item.consistency.result])}>
-              {item.consistency.result}
-              {item.consistency.source === "fallback" && " · keyword fallback"}
-            </Badge>
-          </div>
-          {item.consistency.reason && (
-            <p className="text-muted-foreground leading-relaxed">{item.consistency.reason}</p>
-          )}
-          <ol className="flex flex-col gap-3">
-            {item.claims.map((claim, i) => (
-              <li key={claim.question} className="flex flex-col gap-2 rounded-lg border p-4">
-                <p className="font-medium text-muted-foreground text-xs uppercase tracking-wide">Question {i + 1}</p>
-                <p className="leading-relaxed">{claim.question}</p>
-                <blockquote className="whitespace-pre-wrap break-words border-l-2 pl-3 font-medium leading-relaxed">
-                  {claim.answer || <span className="font-normal text-muted-foreground">No answer</span>}
-                </blockquote>
-              </li>
-            ))}
-          </ol>
-        </section>
-      )}
+      <Responses item={item} passcode={passcode} />
 
       {item.webFindings && (
         <section className="flex flex-col gap-2 rounded-lg border border-dashed p-4">
