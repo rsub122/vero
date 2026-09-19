@@ -8,7 +8,7 @@ A 2-minute pre-check that verifies a construction applicant's answers and safety
 - **Recruiter view** (`/dashboard/applicants`): live, amber first, with Call, Send to PM, an audit log and CSV export.
 - **Hand-off**: a mock ATS webhook, a foreman email via Resend, and a read-only candidate page at `/c/<token>`.
 
-Built on Next.js 16, Convex, the AI SDK (OpenAI), and shadcn/ui. The plan is in `docs/plans/2026-09-19-001-feat-vero-applicant-precheck-plan.md`.
+Built on Next.js 16, Convex, the AI SDK (OpenAI), and shadcn/ui.
 
 ## Run locally
 
