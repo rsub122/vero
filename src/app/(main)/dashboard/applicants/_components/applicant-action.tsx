@@ -48,10 +48,10 @@ export function ApplicantAction({ item, passcode }: { item: ApplicantItem; passc
 
   return (
     <>
-      {lane === "call" ? (
-        <Button size="sm" onClick={call}>
+      {lane === "call" || lane === "bots" ? (
+        <Button size="sm" variant={lane === "bots" ? "outline" : "default"} onClick={call}>
           <Phone aria-hidden="true" />
-          Call
+          {lane === "bots" ? "Call anyway" : "Call"}
         </Button>
       ) : (
         <Button size="sm" variant="outline" onClick={send}>

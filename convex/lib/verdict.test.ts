@@ -124,5 +124,14 @@ it("AE8 counter", () => {
     ...Array.from({ length: 10 }, () => ({ level: "green" as const, recruiterState: "new" as const })),
     { recruiterState: "new" as const },
   ];
-  expect(countApplicants(rows)).toEqual({ total: 14, needCall: 3, confirmed: 11, inProgress: 1 });
+  expect(countApplicants(rows)).toEqual({ total: 14, needCall: 3, likelyBots: 0, confirmed: 11, inProgress: 1 });
+});
+
+it("likely bots leave the call count and are not counted as confirmed", () => {
+  const rows = [
+    { level: "amber" as const, recruiterState: "new" as const, likelyBot: true },
+    { level: "amber" as const, recruiterState: "new" as const },
+    { level: "green" as const, recruiterState: "new" as const },
+  ];
+  expect(countApplicants(rows)).toEqual({ total: 3, needCall: 1, likelyBots: 1, confirmed: 1, inProgress: 0 });
 });

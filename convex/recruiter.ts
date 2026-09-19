@@ -3,6 +3,7 @@ import { ConvexError, v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import { mutation, type QueryCtx, query } from "./_generated/server";
 import { EVENT_LABELS, type EventType, logEvent } from "./audit";
+import { isLikelyBot } from "./lib/checks";
 import { BOT_TRAP, CLAIM_IDS, SAFETY_QUESTIONS } from "./lib/questions";
 import { countApplicants } from "./lib/verdict";
 
@@ -84,6 +85,7 @@ export const list = query({
           emailState: a.emailState,
           consistency: a.checks?.consistency,
           safetyScore: a.checks?.safetyScore,
+          likelyBot: isLikelyBot(a.checks?.flags ?? []),
           claims: (a.claimQuestions?.items ?? []).map((question, i) => ({
             question,
             answer: answers.find((x) => x.questionId === `claim-${i + 1}`)?.value ?? "",
@@ -95,7 +97,9 @@ export const list = query({
     );
     return {
       items,
-      counts: countApplicants(items.map((i) => ({ level: i.verdict?.level, recruiterState: i.recruiterState }))),
+      counts: countApplicants(
+        items.map((i) => ({ level: i.verdict?.level, recruiterState: i.recruiterState, likelyBot: i.likelyBot })),
+      ),
     };
   },
 });

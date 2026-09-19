@@ -9,13 +9,14 @@ interface Counts {
   total: number;
   needCall: number;
   confirmed: number;
+  likelyBots: number;
   inProgress: number;
 }
 
 /** The AE8 counter ("14 applicants. 3 need a call. 11 confirmed.") as the dashboard's KPI cards. */
 export function KpiStrip({ counts, items }: { counts: Counts; items: ApplicantItem[] }) {
   const sent = items.filter((i) => i.recruiterState === "sent").length;
-  const noCall = items.filter((i) => i.verdict?.level === "green").length;
+  const noCall = items.filter((i) => i.verdict?.level === "green").length + counts.likelyBots;
   const pct = counts.total ? Math.round((noCall / counts.total) * 100) : 0;
   const cards = [
     { label: "Applicants", value: counts.total, icon: Users, note: `${counts.inProgress} taking the check now` },
@@ -23,7 +24,7 @@ export function KpiStrip({ counts, items }: { counts: Counts; items: ApplicantIt
       label: "Need a call",
       value: counts.needCall,
       icon: CircleAlert,
-      note: "Amber, sorted to the top",
+      note: `${counts.likelyBots} likely ${counts.likelyBots === 1 ? "bot" : "bots"} filtered out`,
       className: "text-amber-700 dark:text-amber-300",
     },
     { label: "Confirmed", value: counts.confirmed, icon: CircleCheck, note: `${sent} sent to the PM` },

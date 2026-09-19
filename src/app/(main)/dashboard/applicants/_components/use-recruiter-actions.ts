@@ -18,7 +18,9 @@ function patchApplicant(
   for (const { args, value } of store.getAllQueries(api.recruiter.list)) {
     if (!value) continue;
     const items = value.items.map((i) => (i.id === id ? { ...i, ...patch(i) } : i));
-    const counts = countApplicants(items.map((i) => ({ level: i.verdict?.level, recruiterState: i.recruiterState })));
+    const counts = countApplicants(
+      items.map((i) => ({ level: i.verdict?.level, recruiterState: i.recruiterState, likelyBot: i.likelyBot })),
+    );
     store.setQuery(api.recruiter.list, args, { items, counts });
   }
 }

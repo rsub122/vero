@@ -48,7 +48,7 @@ function LaneCard({ item, passcode, onOpen }: { item: ApplicantItem; passcode: s
       <p className="-mt-1.5 truncate text-muted-foreground text-xs">{applicantMeta(item)}</p>
       <p className="line-clamp-2 text-sm">{item.verdict?.reasons[0] ?? item.step}</p>
       <div className="flex items-center justify-between gap-2">
-        <VerdictBadge level={item.verdict?.level} />
+        <VerdictBadge level={item.verdict?.level} bot={laneOf(item) === "bots"} />
         {lane !== "checking" && (
           // biome-ignore lint/a11y/useKeyWithClickEvents: stops the card's mouse click; the button inside has its own keys.
           // biome-ignore lint/a11y/noStaticElementInteractions: same as above.
@@ -137,7 +137,7 @@ export function ApplicantLanes({
   return (
     <DragDropProvider onDragEnd={onDragEnd}>
       <div className="overflow-x-auto px-4 pb-1 [scrollbar-width:thin]">
-        <div className="grid items-start gap-4 md:grid-cols-[repeat(4,minmax(18rem,1fr))]">
+        <div className="grid items-start gap-4 md:grid-cols-[repeat(5,minmax(18rem,1fr))]">
           {lanes.map((lane) => {
             const inLane = items.filter((i) => laneOf(i) === lane.id);
             return (

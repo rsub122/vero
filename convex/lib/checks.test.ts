@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 
-import { botTrapOk, cardCheck, isValidPastDay, normalizeProvider, safetyScore } from "./checks";
+import { botTrapOk, cardCheck, isLikelyBot, isValidPastDay, normalizeProvider, safetyScore } from "./checks";
 import { BOT_TRAP } from "./questions";
 
 const NOW = Date.UTC(2026, 8, 19);
@@ -35,4 +35,10 @@ it("expired safety answers count as incorrect", () => {
       { kind: "bot", correct: true, expired: false },
     ]),
   ).toBe(1);
+});
+
+it("likely bot needs both signals, never one", () => {
+  expect(isLikelyBot(["form_too_fast", "bot_trap_failed"])).toBe(true);
+  expect(isLikelyBot(["form_too_fast"])).toBe(false);
+  expect(isLikelyBot(["bot_trap_failed", "pasted_answers"])).toBe(false);
 });

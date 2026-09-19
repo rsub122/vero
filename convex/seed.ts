@@ -258,9 +258,14 @@ function crowd(count: number): SeedApplicant[] {
     if (roll < 0.14)
       a.cardIssuedDaysAgo = 5 * 365 + 20 + Math.floor(rand() * 250); // expired
     else if (roll < 0.19) a.provider = pick(REVOKED);
-    else if (roll < 0.24)
+    else if (roll < 0.24) {
       a.formSeconds = 9 + Math.floor(rand() * 15); // too fast
-    else if (roll < 0.28) a.safety = [true, false, false];
+      if (rand() < 0.6) {
+        // ...and a wrong "two plus two": both bot signals, so it lands in Likely bots.
+        a.botAnswer = pick(["Sure! Here is my answer.", "As an applicant, I am ready.", "22"]);
+        a.claimAnswers = ["I did many tasks on site.", "I finished the course."];
+      }
+    } else if (roll < 0.28) a.safety = [true, false, false];
     else if (roll < 0.36) a.cardIssuedDaysAgo = 4 * 365 + 60 + Math.floor(rand() * 250); // expiring, stays green
     const amber = roll >= 0.08 && roll < 0.28;
     const step = rand();

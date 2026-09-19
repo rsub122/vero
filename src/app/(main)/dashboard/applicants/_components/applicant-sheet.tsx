@@ -3,7 +3,7 @@
 import { cn } from "cn";
 import { useMutation, useQuery } from "convex/react";
 import { formatDistanceToNow } from "date-fns";
-import { Clock, Globe, Mail } from "lucide-react";
+import { Bot, Clock, Globe, Mail } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -16,9 +16,17 @@ import { ApplicantAction } from "./applicant-action";
 import { AuditLog } from "./audit-log";
 import { Responses } from "./responses";
 import { applicationTiming, formatDuration } from "./timing";
-import { type ApplicantItem, verdictConfig } from "./verdict-config";
+import { type ApplicantItem, laneOf, verdictConfig } from "./verdict-config";
 
-export function VerdictBadge({ level }: { level?: "green" | "amber" }) {
+export function VerdictBadge({ level, bot }: { level?: "green" | "amber"; bot?: boolean }) {
+  if (bot) {
+    return (
+      <Badge variant="outline" className="shrink-0 gap-1 rounded-md px-2 font-medium text-muted-foreground">
+        <Bot aria-hidden="true" />
+        Likely bot
+      </Badge>
+    );
+  }
   if (!level) {
     return (
       <Badge variant="outline" className="gap-1.5 rounded-md px-2 font-normal text-muted-foreground">
@@ -97,6 +105,12 @@ function Details({ item, passcode }: { item: ApplicantItem; passcode: string }) 
         <p className="text-muted-foreground">{item.step}. The verdict appears here when the check ends.</p>
       ) : (
         <section className="flex flex-col gap-3">
+          {item.likelyBot && laneOf(item) === "bots" && (
+            <p className="rounded-lg border border-dashed p-3 text-muted-foreground leading-relaxed">
+              Filed under Likely bots: the form took under 25 seconds and the random check was wrong. Nobody is
+              rejected. Press Call anyway if this looks like a real person.
+            </p>
+          )}
           <Heading>Why this verdict</Heading>
           <ul className="flex flex-col gap-2">
             {verdict.reasons.map((reason) => (
@@ -193,7 +207,7 @@ export function ApplicantSheet({ item, passcode, onOpenChange }: ApplicantSheetP
             <SheetHeader className="border-b">
               <div className="flex items-start justify-between gap-3 pr-8">
                 <SheetTitle className="text-lg">{item.name}</SheetTitle>
-                <VerdictBadge level={item.verdict?.level} />
+                <VerdictBadge level={item.verdict?.level} bot={laneOf(item) === "bots"} />
               </div>
               <SheetDescription>{applicantMeta(item)}</SheetDescription>
             </SheetHeader>

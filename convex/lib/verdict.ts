@@ -68,17 +68,22 @@ export function computeVerdict(c: CheckResults): Verdict {
 export interface CountInput {
   level?: "green" | "amber";
   recruiterState: "new" | "called" | "confirmed" | "not_proceeding" | "sent";
+  likelyBot?: boolean;
 }
 
 /** AE8: only applicants with a verdict count; the rest are "in progress". */
 export function countApplicants(rows: CountInput[]) {
   const decided = rows.filter((r) => r.level !== undefined);
-  const needCall = decided.filter((r) => r.level === "amber" && ["new", "called"].includes(r.recruiterState)).length;
+  const open = decided.filter((r) => r.level === "amber" && ["new", "called"].includes(r.recruiterState));
+  // Likely bots wait in their own bucket until a recruiter decides; they are neither a call nor confirmed.
+  const likelyBots = open.filter((r) => r.likelyBot).length;
+  const needCall = open.length - likelyBots;
   const notProceeding = decided.filter((r) => r.recruiterState === "not_proceeding").length;
   return {
     total: decided.length,
     needCall,
-    confirmed: decided.length - needCall - notProceeding,
+    likelyBots,
+    confirmed: decided.length - needCall - likelyBots - notProceeding,
     inProgress: rows.length - decided.length,
   };
 }

@@ -24,7 +24,7 @@ import { KpiStrip } from "./kpi-strip";
 import { PasscodeGate } from "./passcode-gate";
 import { type LaneId, laneOf, lanes } from "./verdict-config";
 
-const LANE_ORDER: Record<LaneId, number> = { call: 0, ready: 1, checking: 2, done: 3 };
+const LANE_ORDER: Record<LaneId, number> = { call: 0, ready: 1, checking: 2, done: 3, bots: 4 };
 
 function Board({ passcode }: { passcode: string }) {
   const jobs = useQuery(api.recruiter.jobs, { passcode });
@@ -166,7 +166,7 @@ function Board({ passcode }: { passcode: string }) {
               </Select>
             )}
             {view === "board" && (
-              <p className="text-muted-foreground text-xs">Drag a card by its handle to move it to the next step.</p>
+              <p className="text-muted-foreground text-xs">Drag a card to move it to the next step.</p>
             )}
           </div>
 

@@ -42,6 +42,14 @@ export function cardCheck(issueDay: string | undefined, now: number): { status: 
   return { status: now >= warnFrom ? "expiring" : "valid", expiresAt };
 }
 
+/**
+ * Both bot signals at once: a form faster than a person can read it and a wrong answer to "two plus two".
+ * One signal alone stays a normal amber call, since fast workers and weak readers trip one each.
+ */
+export function isLikelyBot(flags: readonly string[]): boolean {
+  return flags.includes("form_too_fast") && flags.includes("bot_trap_failed");
+}
+
 export function botTrapOk(value: string, accepted: readonly string[]): boolean {
   return accepted.includes(value.trim().toLowerCase());
 }

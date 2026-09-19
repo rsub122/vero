@@ -62,11 +62,11 @@ export function ApplicantsTable({ items, passcode, onOpen }: ApplicantsTableProp
                 </button>
                 <p className="truncate text-muted-foreground text-xs">{applicantMeta(item)}</p>
                 <div className="mt-1.5 sm:hidden">
-                  <VerdictBadge level={item.verdict?.level} />
+                  <VerdictBadge level={item.verdict?.level} bot={laneOf(item) === "bots"} />
                 </div>
               </TableCell>
               <TableCell className="hidden py-3 sm:table-cell">
-                <VerdictBadge level={item.verdict?.level} />
+                <VerdictBadge level={item.verdict?.level} bot={laneOf(item) === "bots"} />
               </TableCell>
               <TableCell className="hidden max-w-80 py-3 lg:table-cell">
                 <p className="truncate text-sm">{item.verdict?.reasons[0] ?? item.step}</p>
